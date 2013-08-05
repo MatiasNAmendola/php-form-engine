@@ -10,7 +10,18 @@ namespace FormEngine;
 class Form {
 
 	protected $fields = array();
-	protected $attributes = array();
+	protected $errors = array();
+
+	/**
+	 * HTML attributes
+	 * 
+	 * @var	array
+	 */
+	protected $attributes = array(
+		'action'			=>	'',
+		'method'			=>	'post',
+		'accept-charset'	=>	'utf-8'
+	);
 
 	/**
 	 * 
@@ -28,6 +39,9 @@ class Form {
 				$class .= '\\'.$config['type'];
 			}
 
+			// Populate value
+			$config['value'] = @$_POST[$config['name']];
+			
 			$this->fields[] = new $class($config);
 		}
 	}
@@ -51,7 +65,11 @@ class Form {
 	 */
 	public function open($attributes = array())
 	{
-		return '<form'.HTML::attributes($attributes).'>';
+		foreach ($attributes as $key => $value)
+		{
+			$this->attributes[$key] = $value;
+		}
+		return '<form'.HTML::attributes($this->attributes).'>';
 	}
 
 	/**
@@ -63,6 +81,35 @@ class Form {
 	public function close()
 	{
 		return '</form>';
+	}
+
+	/**
+	 * Get all validation errors.
+	 * 
+	 * @param void
+	 * @return array
+	 */
+	public function errors()
+	{
+		return $this->errors;
+	}
+
+	/**
+	 * Validate all fields.
+	 * 
+	 * @param void
+	 * @return bool
+	 */
+	public function validate()
+	{
+		foreach ($this->fields as $key => $field)
+		{
+			if ( ! $field->validate())
+			{
+				$this->errors[$key] = $field->error();
+			}
+		}
+		return ! empty($this->errors);
 	}
 
 }

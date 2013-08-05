@@ -17,6 +17,7 @@ class Radio extends \FormEngine\Field  {
 		foreach ($this->getOptions() as $value => $text)
 		{
 			$attrs = HTML::attributes(array(
+				'name' => $this->getAttribute('name'),
 				'type' => 'radio',
 				'value' => $value,
 			));

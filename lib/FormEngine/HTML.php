@@ -14,6 +14,7 @@ class HTML
 	public static function attributes(array $attrs = array())
 	{
 		ob_start();
+		ksort($attrs);
 		foreach ($attrs as $key => $value)
 		{
 			// Boolean attributes
